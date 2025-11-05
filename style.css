@@ -1,0 +1,204 @@
+/* Плавные анимации появления - отключены для стабильности */
+/* @keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.8s ease-out;
+}
+
+.animate-fade-in-delay {
+    animation: fadeIn 1s ease-out 0.3s both;
+} */
+
+/* Простая прокрутка без анимации */
+html {
+    scroll-behavior: auto;
+}
+
+/* Стили для навигации */
+.nav-link {
+    transition: color 0.3s ease;
+    position: relative;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #14b8a6;
+    transition: width 0.3s ease;
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+/* Стили для карточек комнат */
+.room-card {
+    transition: box-shadow 0.3s ease;
+}
+
+.room-card:hover {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Кастомный скроллбар для модалок */
+#room-modal .bg-white,
+#application-modal .bg-white,
+#room-edit-modal .bg-white {
+    scrollbar-width: thin;
+    scrollbar-color: #14b8a6 #f3f4f6;
+}
+
+#room-modal .bg-white::-webkit-scrollbar,
+#application-modal .bg-white::-webkit-scrollbar,
+#room-edit-modal .bg-white::-webkit-scrollbar {
+    width: 8px;
+}
+
+#room-modal .bg-white::-webkit-scrollbar-track,
+#application-modal .bg-white::-webkit-scrollbar-track,
+#room-edit-modal .bg-white::-webkit-scrollbar-track {
+    background: #f3f4f6;
+}
+
+#room-modal .bg-white::-webkit-scrollbar-thumb,
+#application-modal .bg-white::-webkit-scrollbar-thumb,
+#room-edit-modal .bg-white::-webkit-scrollbar-thumb {
+    background-color: #14b8a6;
+    border-radius: 4px;
+}
+
+/* Ограничение текста (line-clamp) */
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+    #room-modal .bg-white,
+    #application-modal .bg-white,
+    #room-edit-modal .bg-white {
+        max-height: 95vh;
+    }
+    
+    .filter-btn {
+        font-size: 0.875rem;
+        padding: 0.5rem 0.75rem;
+    }
+}
+
+/* Анимации для таблиц */
+table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+/* Стили для форм */
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+}
+
+/* Стили для кнопок */
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Адаптивные изображения */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Стили для градиентного фона */
+.bg-gradient-hero {
+    background: linear-gradient(135deg, #0891b2 0%, #14b8a6 50%, #3b82f6 100%);
+}
+
+/* Улучшенные карточки статистики */
+.stat-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    animation: pulse 3s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 0.3;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Улучшенные кнопки */
+.btn-gradient {
+    background: linear-gradient(135deg, #14b8a6 0%, #3b82f6 100%);
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn-gradient:hover {
+    background: linear-gradient(135deg, #0d9488 0%, #2563eb 100%);
+    box-shadow: 0 10px 25px rgba(20, 184, 166, 0.3);
+}
+
+/* Стили для таблиц */
+table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+table thead th {
+    background: linear-gradient(to bottom, #f9fafb, #f3f4f6);
+    border-bottom: 2px solid #e5e7eb;
+}
+
+table tbody tr:hover {
+    background-color: #f9fafb;
+    transition: background-color 0.2s ease;
+}
+
+/* Улучшенные модальные окна */
+.modal-backdrop {
+    backdrop-filter: blur(4px);
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+/* Стили для карточек комнат в админке */
+.room-admin-card {
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    border: 1px solid #e5e7eb;
+}
+
+.room-admin-card:hover {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    border-color: #14b8a6;
+}
+
+
