@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ панель - Jastar Apartments</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-gray-100">
+    
+    <!-- Экран входа -->
+    <div id="login-screen" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 to-blue-50">
+        <div class="bg-white rounded-lg shadow-xl p-8 max-w-md w-full">
+            <h1 class="text-3xl font-bold text-center text-gray-800 mb-2">Админ панель</h1>
+            <p class="text-center text-gray-600 mb-8">Jastar Apartments</p>
+            
+            <form id="login-form" class="space-y-6">
+                <div>
+                    <label for="email" class="block text-gray-700 font-semibold mb-2">Email</label>
+                    <input type="email" id="email" name="email" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                           placeholder="admin@jastar.kz">
+                </div>
+                <div>
+                    <label for="password" class="block text-gray-700 font-semibold mb-2">Пароль</label>
+                    <input type="password" id="password" name="password" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                </div>
+                <div id="login-error" class="hidden bg-red-100 text-red-700 p-3 rounded-lg"></div>
+                <button type="submit" 
+                        class="w-full bg-teal-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-teal-700 transition-colors">
+                    Войти
+                </button>
+            </form>
+            
+            <div class="mt-6 text-center text-sm text-gray-500">
+                <p>Для создания админ аккаунта используйте Firebase Console</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Админ панель -->
+    <div id="admin-panel" class="hidden">
+        <!-- Навигация -->
+        <nav class="bg-white shadow-lg border-b">
+            <div class="container mx-auto px-4 py-4">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-10 h-10 bg-gradient-to-br from-teal-500 to-blue-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-home text-white"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-xl font-bold text-gray-900">Админ панель</h1>
+                            <p class="text-sm text-gray-500">Jastar Apartments</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <a href="index.html" class="text-gray-700 hover:text-teal-600 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors">
+                            <i class="fas fa-globe mr-2"></i>На сайт
+                        </a>
+                        <button id="logout-btn" class="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition-colors shadow-md hover:shadow-lg">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Выйти
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container mx-auto px-4 py-8">
+            <!-- Дашборд -->
+            <div id="dashboard" class="mb-8">
+                <div class="mb-8">
+                    <h2 class="text-4xl font-bold text-gray-900 mb-2">Панель управления</h2>
+                    <p class="text-gray-600">Давайте проверим обновления сегодня</p>
+                </div>
+                
+                <!-- Статистика -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
+                        <div class="relative z-10">
+                            <p class="text-blue-100 text-sm mb-2">Всего заявок</p>
+                            <p id="stat-total" class="text-4xl font-bold mb-2">0</p>
+                            <div class="flex items-center text-blue-100 text-sm">
+                                <i class="fas fa-arrow-up mr-1"></i>
+                                <span>Все заявки</span>
+                            </div>
+                        </div>
+                        <div class="absolute bottom-4 right-4">
+                            <i class="fas fa-file-alt text-5xl opacity-20"></i>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl shadow-lg p-6 text-white relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
+                        <div class="relative z-10">
+                            <p class="text-yellow-100 text-sm mb-2">Новые заявки</p>
+                            <p id="stat-pending" class="text-4xl font-bold mb-2">0</p>
+                            <div class="flex items-center text-yellow-100 text-sm">
+                                <i class="fas fa-clock mr-1"></i>
+                                <span>Требуют внимания</span>
+                            </div>
+                        </div>
+                        <div class="absolute bottom-4 right-4">
+                            <i class="fas fa-clock text-5xl opacity-20"></i>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg p-6 text-white relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
+                        <div class="relative z-10">
+                            <p class="text-green-100 text-sm mb-2">Одобренные</p>
+                            <p id="stat-approved" class="text-4xl font-bold mb-2">0</p>
+                            <div class="flex items-center text-green-100 text-sm">
+                                <i class="fas fa-check-circle mr-1"></i>
+                                <span>Успешно обработаны</span>
+                            </div>
+                        </div>
+                        <div class="absolute bottom-4 right-4">
+                            <i class="fas fa-check-circle text-5xl opacity-20"></i>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-red-500 to-red-600 rounded-xl shadow-lg p-6 text-white relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
+                        <div class="relative z-10">
+                            <p class="text-red-100 text-sm mb-2">Отклоненные</p>
+                            <p id="stat-rejected" class="text-4xl font-bold mb-2">0</p>
+                            <div class="flex items-center text-red-100 text-sm">
+                                <i class="fas fa-times-circle mr-1"></i>
+                                <span>Не подошли</span>
+                            </div>
+                        </div>
+                        <div class="absolute bottom-4 right-4">
+                            <i class="fas fa-times-circle text-5xl opacity-20"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Табы -->
+                <div class="bg-white rounded-lg shadow-md p-2 mb-6 inline-flex">
+                    <nav class="flex space-x-2">
+                        <button class="tab-btn active px-6 py-3 rounded-lg bg-teal-600 text-white font-semibold shadow-md transition-all" data-tab="applications">
+                            <i class="fas fa-file-alt mr-2"></i>Заявки
+                        </button>
+                        <button class="tab-btn px-6 py-3 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 font-semibold transition-all" data-tab="rooms">
+                            <i class="fas fa-bed mr-2"></i>Комнаты
+                        </button>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Секция заявок -->
+            <div id="applications-section" class="tab-content">
+                <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-900">Заявки на проживание</h3>
+                            <p class="text-gray-500 text-sm mt-1">Управление заявками от клиентов</p>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <button class="filter-btn active px-4 py-2 rounded-lg bg-teal-600 text-white shadow-md hover:shadow-lg transition-all" data-filter="all">
+                                <i class="fas fa-list mr-2"></i>Все
+                            </button>
+                            <button class="filter-btn px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all" data-filter="pending">
+                                <i class="fas fa-clock mr-2"></i>Новые
+                            </button>
+                            <button class="filter-btn px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all" data-filter="approved">
+                                <i class="fas fa-check mr-2"></i>Одобренные
+                            </button>
+                            <button class="filter-btn px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all" data-filter="rejected">
+                                <i class="fas fa-times mr-2"></i>Отклоненные
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="applications-container" class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-gray-700 font-semibold">Дата</th>
+                                    <th class="px-4 py-3 text-left text-gray-700 font-semibold">Имя</th>
+                                    <th class="px-4 py-3 text-left text-gray-700 font-semibold">Телефон</th>
+                                    <th class="px-4 py-3 text-left text-gray-700 font-semibold">Комната</th>
+                                    <th class="px-4 py-3 text-left text-gray-700 font-semibold">Дата заселения</th>
+                                    <th class="px-4 py-3 text-left text-gray-700 font-semibold">Статус</th>
+                                    <th class="px-4 py-3 text-left text-gray-700 font-semibold">Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody id="applications-table-body">
+                                <tr>
+                                    <td colspan="7" class="px-4 py-8 text-center text-gray-500">
+                                        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
+                                        <p class="mt-2">Загрузка заявок...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Секция комнат -->
+            <div id="rooms-section" class="tab-content hidden">
+                <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-900">Управление комнатами</h3>
+                            <p class="text-gray-500 text-sm mt-1">Редактирование и добавление комнат</p>
+                        </div>
+                        <button id="add-room-btn" class="bg-gradient-to-r from-teal-500 to-blue-600 text-white px-6 py-3 rounded-lg hover:from-teal-600 hover:to-blue-700 transition-all shadow-md hover:shadow-lg">
+                            <i class="fas fa-plus mr-2"></i>Добавить комнату
+                        </button>
+                    </div>
+                    
+                    <div id="rooms-admin-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="text-center py-8 text-gray-500">
+                            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
+                            <p class="mt-2">Загрузка комнат...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно деталей заявки -->
+    <div id="application-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="sticky top-0 bg-white border-b p-4 flex justify-between items-center">
+                <h3 class="text-2xl font-bold text-gray-800">Детали заявки</h3>
+                <button id="close-application-modal" class="text-gray-500 hover:text-gray-700 text-3xl">&times;</button>
+            </div>
+            <div id="application-modal-content" class="p-6">
+                <!-- Контент загружается через JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно редактирования комнаты -->
+    <div id="room-edit-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="sticky top-0 bg-white border-b p-4 flex justify-between items-center">
+                <h3 id="room-edit-title" class="text-2xl font-bold text-gray-800">Редактировать комнату</h3>
+                <button id="close-room-modal" class="text-gray-500 hover:text-gray-700 text-3xl">&times;</button>
+            </div>
+            <div class="p-6">
+                <form id="room-edit-form" class="space-y-6">
+                    <input type="hidden" id="room-edit-id">
+                    
+                    <div>
+                        <label for="room-name" class="block text-gray-700 font-semibold mb-2">Название *</label>
+                        <input type="text" id="room-name" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                    </div>
+                    
+                    <div>
+                        <label for="room-price" class="block text-gray-700 font-semibold mb-2">Цена *</label>
+                        <input type="text" id="room-price" required placeholder="70 000 тг / мес"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                    </div>
+                    
+                    <div>
+                        <label for="room-description" class="block text-gray-700 font-semibold mb-2">Описание *</label>
+                        <textarea id="room-description" rows="4" required
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"></textarea>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="room-area" class="block text-gray-700 font-semibold mb-2">Площадь</label>
+                            <input type="text" id="room-area" placeholder="15 м²"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label for="room-beds" class="block text-gray-700 font-semibold mb-2">Кровати</label>
+                            <input type="text" id="room-beds" placeholder="2 кровати"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="room-features" class="block text-gray-700 font-semibold mb-2">Удобства (через запятую) *</label>
+                        <input type="text" id="room-features" required placeholder="Wi-Fi, Стиральная машина, Кухня"
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                    </div>
+                    
+                    <div>
+                        <label for="room-images" class="block text-gray-700 font-semibold mb-2">Фото (URL, по одному на строку)</label>
+                        <textarea id="room-images" rows="4" placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg"
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"></textarea>
+                    </div>
+                    
+                    <div class="flex space-x-4">
+                        <button type="submit" class="flex-1 bg-teal-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-teal-700 transition-colors">
+                            Сохранить
+                        </button>
+                        <button type="button" id="cancel-room-edit" class="flex-1 bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-400 transition-colors">
+                            Отмена
+                        </button>
+                        <button type="button" id="delete-room-btn" class="bg-red-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-600 transition-colors hidden">
+                            Удалить
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Подключение скриптов -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/rooms-data.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>
+
+

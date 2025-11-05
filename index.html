@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jastar Apartments — Современное общежитие в Алматы</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1D4ED8',
+                        secondary: '#FBBF24',
+                        background: '#F9FAFB',
+                        text_dark: '#1E293B',
+                        success: '#22C55E',
+                        error: '#EF4444',
+                        hero_dark: '#033b5c',
+                        hero_light: '#076c8c',
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="font-sans bg-background text-text_dark">
+
+    <header class="sticky top-0 z-50 bg-white shadow-md">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center py-4">
+            <a href="#hero-section" class="text-xl font-bold text-primary">Jastar <span class="text-text_dark">Apartments</span></a>
+
+            <nav class="hidden md:flex space-x-6 text-text_dark font-medium">
+                <a href="#hero-section" class="hover:text-primary transition duration-300">Главная</a>
+                <a href="#rooms" class="hover:text-primary transition duration-300">Комнаты</a>
+                <a href="#about" class="hover:text-primary transition duration-300">О нас</a>
+                <a href="#facilities" class="hover:text-primary transition duration-300">Услуги</a>
+                <a href="#contacts" class="hover:text-primary transition duration-300">Контакты</a>
+                <button onclick="openApplicationForm('Общая')" class="text-primary hover:text-blue-700 transition duration-300 font-semibold">Оставить заявку</button>
+            </nav>
+
+            <div class="flex items-center space-x-4">
+                <a href="admin.html" class="hidden md:block bg-secondary text-text_dark px-3 py-1.5 rounded-lg font-semibold hover:bg-amber-400 transition duration-300 text-sm" title="Вход для администраторов">
+                    <i class="fas fa-lock mr-1"></i>Админ
+                </a>
+                
+                <a href="tel:+77074986836" class="bg-primary text-white px-3 py-1.5 rounded-lg font-semibold hidden lg:block hover:bg-blue-700 transition duration-300">+7 707-498-68-36</a>
+                
+                <button id="mobile-menu-button" onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-lg text-text_dark hover:bg-gray-100 transition duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <div id="mobile-menu" class="hidden md:hidden absolute top-full left-0 w-full bg-white shadow-lg py-2 transition duration-300">
+            <a href="#hero-section" class="mobile-link block px-4 py-2 text-text_dark hover:bg-gray-50">Главная</a>
+            <a href="#rooms" class="mobile-link block px-4 py-2 text-text_dark hover:bg-gray-50">Комнаты</a>
+            <a href="#about" class="mobile-link block px-4 py-2 text-text_dark hover:bg-gray-50">О нас</a>
+            <a href="#facilities" class="mobile-link block px-4 py-2 text-text_dark hover:bg-gray-50">Услуги</a>
+            <a href="#contacts" class="mobile-link block px-4 py-2 text-text_dark hover:bg-gray-50">Контакты</a>
+            <button onclick="openApplicationForm('Общая')" class="w-full text-left px-4 py-2 text-primary hover:bg-gray-50 font-semibold">Оставить заявку</button>
+            <a href="admin.html" class="block px-4 py-2 text-text_dark hover:bg-gray-50 font-semibold border-t mt-2 pt-2"><i class="fas fa-lock mr-1"></i>Вход для админов</a>
+        </div>
+    </header>
+    
+    <section id="hero-section" class="bg-gradient-to-r from-cyan-600 via-teal-500 to-blue-400 text-white pt-20 pb-24 lg:pt-24 lg:pb-32">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <img src="images/logo.jpg" alt="Jastar Apartments Logo" class="w-48 h-48 md:w-64 md:h-64 mx-auto object-contain rounded-xl shadow-2xl border-4 border-white/30 mb-8">
+            </div>
+            <div class="max-w-4xl mx-auto text-center">
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight mb-4">
+                    Jastar Apartments — <br>
+                    <span class="text-yellow-300">современное общежитие</span> в центре Алматы
+                </h1>
+                <p class="text-xl lg:text-2xl mb-8 opacity-95">
+                    2- и 3-местные комнаты от <strong>80 000 ₸</strong>.
+                </p>
+                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 justify-center">
+                    <a href="#rooms" class="text-center bg-white text-blue-900 px-8 py-3 rounded-xl font-bold text-lg shadow-lg hover:bg-gray-100 transition duration-300">
+                        Посмотреть комнаты
+                    </a>
+                    <button onclick="openApplicationForm('Общая')" class="bg-transparent border-2 border-white text-white px-8 py-3 rounded-xl font-bold text-lg shadow-lg hover:bg-white hover:text-blue-900 transition duration-300">
+                        Оставить заявку
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- О нас -->
+    <section id="about" class="py-16 lg:py-24 bg-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-bold text-center mb-12">О нас</h2>
+            <div class="max-w-3xl mx-auto">
+                <p class="text-lg text-gray-700 mb-6 leading-relaxed">
+                    Jastar Apartments — это новое студенческое общежитие с комфортными условиями проживания.
+                </p>
+                <p class="text-lg text-gray-700 mb-8 leading-relaxed">
+                    Мы предлагаем спокойную атмосферу для учёбы, высокоскоростной интернет и удобную инфраструктуру.
+                </p>
+                
+                <h3 class="text-2xl font-bold text-gray-800 mb-6">Преимущества:</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-check-circle text-teal-600 text-xl"></i>
+                        <span class="text-gray-700">современный ремонт</span>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-check-circle text-teal-600 text-xl"></i>
+                        <span class="text-gray-700">WI-FI высокой скорости</span>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-check-circle text-teal-600 text-xl"></i>
+                        <span class="text-gray-700">круглосуточное видеонаблюдение</span>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-check-circle text-teal-600 text-xl"></i>
+                        <span class="text-gray-700">рабочие зоны и коворкинг</span>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-check-circle text-teal-600 text-xl"></i>
+                        <span class="text-gray-700">прачечная и общая кухня</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="rooms" class="py-16 lg:py-24">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-bold text-center mb-12">🏡 Наши комнаты</h2>
+            
+            <!-- Каталог комнат из Firestore -->
+            <div id="rooms-container" class="grid md:grid-cols-2 gap-8">
+                <div class="col-span-full text-center text-gray-500">
+                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
+                    <p class="mt-2">Загрузка комнат...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Услуги -->
+    <section id="facilities" class="py-16 lg:py-24 bg-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-bold text-center mb-12">Услуги</h2>
+            <div class="max-w-3xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="flex items-center space-x-4 bg-gray-50 p-6 rounded-lg">
+                        <i class="fas fa-wifi text-4xl text-teal-600"></i>
+                        <span class="text-gray-700 text-lg">Wi-Fi высокой скорости</span>
+                    </div>
+                    <div class="flex items-center space-x-4 bg-gray-50 p-6 rounded-lg">
+                        <i class="fas fa-utensils text-4xl text-teal-600"></i>
+                        <span class="text-gray-700 text-lg">Кухня общего пользования</span>
+                    </div>
+                    <div class="flex items-center space-x-4 bg-gray-50 p-6 rounded-lg">
+                        <i class="fas fa-tshirt text-4xl text-teal-600"></i>
+                        <span class="text-gray-700 text-lg">Прачечная</span>
+                    </div>
+                    <div class="flex items-center space-x-4 bg-gray-50 p-6 rounded-lg">
+                        <i class="fas fa-laptop text-4xl text-teal-600"></i>
+                        <span class="text-gray-700 text-lg">Коворкинг зона / space for study</span>
+                    </div>
+                    <div class="flex items-center space-x-4 bg-gray-50 p-6 rounded-lg">
+                        <i class="fas fa-video text-4xl text-teal-600"></i>
+                        <span class="text-gray-700 text-lg">Видеонаблюдение 24/7</span>
+                    </div>
+                    <div class="flex items-center space-x-4 bg-gray-50 p-6 rounded-lg">
+                        <i class="fas fa-couch text-4xl text-teal-600"></i>
+                        <span class="text-gray-700 text-lg">Вся мебель и техника включены</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contacts" class="py-16 lg:py-24 bg-background">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-bold text-center mb-12">📞 Наши контакты</h2>
+            <div class="grid md:grid-cols-3 gap-8 text-center mb-12">
+                <div class="p-6 rounded-xl shadow-lg bg-white">
+                    <h4 class="text-xl font-semibold mb-2 text-primary">Адрес</h4>
+                    <p class="text-gray-700">ул. Каныша Сатпаева, 7А</p>
+                    <p class="text-sm text-gray-500 mt-1">район Бостандык, Алматы</p>
+                </div>
+
+                <div class="p-6 rounded-xl shadow-lg bg-white">
+                    <h4 class="text-xl font-semibold mb-2 text-primary">Телефон</h4>
+                    <a href="tel:+77074986836" class="text-2xl font-bold text-text_dark hover:text-primary transition duration-300">+7 707-498-68-36</a>
+                </div>
+
+                <div class="p-6 rounded-xl shadow-lg bg-white">
+                    <h4 class="text-xl font-semibold mb-2 text-primary">Instagram</h4>
+                    <a href="https://instagram.com/jastar_apartments" target="_blank" class="text-text_dark hover:text-primary transition duration-300">@jastar_apartments</a>
+                    <p class="text-sm text-gray-500 mt-1">Следите за новостями!</p>
+                </div>
+            </div>
+            
+            <div class="mb-8">
+                <a href="https://2gis.kz/almaty/search/ул.%20Каныша%20Сатпаева%207А" target="_blank" 
+                   class="inline-block bg-primary text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 transition duration-300 mx-auto block text-center max-w-xs">
+                    <i class="fas fa-map mr-2"></i>Открыть маршрут в 2ГИС
+                </a>
+            </div>
+            
+            <div class="h-64 bg-gray-200 rounded-xl overflow-hidden border-2 border-gray-300">
+                <iframe src="https://2gis.kz/almaty/geo/9557837375068462/76.903577%2C43.240448?m=76.903577%2C43.240448%2F19.47" 
+                        width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-text_dark text-white py-8 mt-12">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-sm">&copy; 2025 Jastar Apartments | Все права защищены</p>
+        </div>
+    </footer>
+
+    <!-- Модальное окно заявки -->
+    <div id="application-modal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-[9999] hidden flex items-center justify-center p-4 transition duration-300">
+        <div class="bg-white rounded-xl p-8 w-full max-w-lg shadow-2xl transform transition-all scale-100">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-primary">Оставить заявку на проживание</h3>
+                <button onclick="closeApplicationForm()" class="text-gray-400 hover:text-text_dark transition duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            
+            <form id="application-form">
+                <div class="mb-4">
+                    <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Ваше Имя</label>
+                    <input type="text" id="name" name="name" required 
+                           class="w-full border border-gray-300 p-3 rounded-lg focus:ring-primary focus:border-primary transition duration-300" 
+                           placeholder="Алибек" autocomplete="name">
+                </div>
+                
+                <div class="mb-4">
+                    <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Телефон (для связи)</label>
+                    <input type="tel" id="phone" name="phone" required 
+                           class="w-full border border-gray-300 p-3 rounded-lg focus:ring-primary focus:border-primary transition duration-300" 
+                           placeholder="+7 (707) 123 45 67" autocomplete="tel">
+                </div>
+                
+                <div class="mb-4">
+                    <label for="room_type" class="block text-sm font-medium text-gray-700 mb-1">Тип комнаты</label>
+                    <select id="room_type" name="room_type" required 
+                            class="w-full border border-gray-300 p-3 rounded-lg focus:ring-primary focus:border-primary bg-white transition duration-300">
+                        <option value="">Выберите комнату...</option>
+                        <option value="Общая">Не имеет значения</option>
+                    </select>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="move_in_date" class="block text-sm font-medium text-gray-700 mb-1">Желаемая дата заселения</label>
+                    <input type="date" id="move_in_date" name="move_in_date" 
+                           class="w-full border border-gray-300 p-3 rounded-lg focus:ring-primary focus:border-primary transition duration-300">
+                </div>
+                
+                <div class="mb-6">
+                    <label for="comment" class="block text-sm font-medium text-gray-700 mb-1">Комментарий (необязательно)</label>
+                    <textarea id="comment" name="comment" rows="3" 
+                              class="w-full border border-gray-300 p-3 rounded-lg focus:ring-primary focus:border-primary transition duration-300" 
+                              placeholder="Укажите, если есть особые пожелания..."></textarea>
+                </div>
+                
+                <button type="submit" class="w-full bg-primary text-white py-3 rounded-xl font-bold text-lg hover:bg-blue-700 transition duration-300" id="submit-button">
+                    Отправить заявку
+                </button>
+
+                <p id="form-message" class="mt-4 text-center font-semibold hidden"></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Подключение скриптов -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/rooms-data.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>

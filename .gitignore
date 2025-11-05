@@ -1,0 +1,24 @@
+# Firebase конфигурация (не коммитить реальные данные в публичный репозиторий)
+# js/firebase-config.js
+
+# Временные файлы
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Node modules (если будет использоваться)
+node_modules/
+package-lock.json
+
+# Окружение
+.env
+.env.local
+
+
